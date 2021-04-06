@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.5.0;
+pragma solidity 0.8.3;
 
 import "./DaiToken.sol";
 
@@ -13,7 +13,7 @@ contract Put{
     string public period;
     DaiToken public daiToken;
 
-    constructor(string memory _period, uint256 _amount, uint256 _strike, uint256 _premium, DaiToken _daiToken) public{
+    constructor(string memory _period, uint256 _amount, uint256 _strike, uint256 _premium, DaiToken _daiToken) {
         owner = msg.sender;
         strike = _strike;
         amount = _amount;
