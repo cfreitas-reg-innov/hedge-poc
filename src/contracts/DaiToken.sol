@@ -50,7 +50,4 @@ contract DaiToken {
         return true;
     }
 
-    function mint(address account, uint256 amount) public {
-
-    }
 }
