@@ -34,26 +34,5 @@ contract('Put', ([liquidityPool, investor]) => {
             const name = await put.name()
             assert.equal(name, 'Put Hedge Option Contract')
         })
-
-        it('investor has tokens', async () => {
-            let balance = await daiToken.balanceOf(investor)
-            assert.equal(balance.toString(), tokens('1000'))
-        })
-
-        it('transfers premium to the liquidity pool', async () => {
-            await daiToken.approve(put.address, tokens('15'), {from: investor})
-            await put.transferPremium(liquidityPool, {from: investor})
-        })
-
-        it('investor has total = tokens - premium', async () => {
-            let balance = await daiToken.balanceOf(investor)
-            assert.equal(balance.toString(), tokens('985'))
-        })
-
-        it('liquidity pool has increased in premium', async () => {
-            let balance = await daiToken.balanceOf(liquidityPool)
-            assert.equal(balance.toString(), tokens('9999015'))
-        })
-
     })
 })

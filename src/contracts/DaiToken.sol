@@ -1,4 +1,5 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity 0.8.3;
 
 contract DaiToken {
     string  public name = "Mock DAI Token";
@@ -21,7 +22,7 @@ contract DaiToken {
     mapping(address => uint256) public balanceOf; // Fetch the value of mapping, associative array / hash array / key value
     mapping(address => mapping(address => uint256)) public allowance;
 
-    constructor() public {
+    constructor() {
         balanceOf[msg.sender] = totalSupply;
     }
 
@@ -47,5 +48,9 @@ contract DaiToken {
         allowance[_from][msg.sender] -= _value;
         emit Transfer(_from, _to, _value);
         return true;
+    }
+
+    function mint(address account, uint256 amount) public {
+
     }
 }
