@@ -14,7 +14,7 @@ contract Put is Options{
     constructor(DaiToken _token) Options(Options.OptionType.Put) {
         token = _token;
         pool = new LiquidityPool(token);
-        //approve();
+        approve();
     }
 
     /**
@@ -27,7 +27,7 @@ contract Put is Options{
     /**
      * @notice Sends premiums to the ERC liquidity pool contract
      */
-    function sendPremium(uint256 amount) internal override returns (uint premium) {
+    function sendPremium(uint256 amount) public {
         /*
         uint currentPrice = uint(priceProvider.latestAnswer());
         address[] memory path = new address[](2);
@@ -43,7 +43,6 @@ contract Put is Options{
         );
         premium = amounts[amounts.length - 1];
         */
-        premium = 10;
         pool.sendPremium(amount);
     }
 

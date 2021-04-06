@@ -88,11 +88,11 @@ contract LiquidityPool is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
         require(token.transfer(msg.sender, amount), "Insufficient funds");
     }
     
-        /*
+    /*
      * @nonce Calls by HegicPutOptions to send and lock the premiums
      * @param amount Funds that should be locked
      */
-    function sendPremium(uint256 amount) external {
+    function sendPremium(uint256 amount) external onlyOwner {
         //lockedPremium = lockedPremium.add(amount);
         require(
             token.transferFrom(msg.sender, address(this), amount),

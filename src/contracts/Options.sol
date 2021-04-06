@@ -27,10 +27,6 @@ contract Options is Ownable{
         uint256 expiration;
     }
 
-    function sendPremium(uint256 amount)
-        internal
-        virtual
-        returns (uint256 locked);
 
 
 }
