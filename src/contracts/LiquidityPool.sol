@@ -100,5 +100,18 @@ contract LiquidityPool is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
         );
     }
 
+    /*
+     * @nonce calls by HegicPutOptions to unlock the premiums after an option's expiraton
+     * @param to Provider
+     * @param amount Amount of premiums that should be unlocked
+     */
+    function send(address payable to, uint256 amount)
+        external
+        onlyOwner
+    {
+        require(to != address(0));
+        //require(lockedAmount >= amount, "Pool Error: You are trying to unlock more premiums than have been locked for the contract. Please lower the amount.");
+        require(token.transfer(to, amount), "Token transfer error: Please lower the amount of premiums that you want to send.");
+    }
 
 }

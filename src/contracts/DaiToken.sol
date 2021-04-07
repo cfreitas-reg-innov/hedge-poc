@@ -50,4 +50,10 @@ contract DaiToken {
         return true;
     }
 
+    // mimics minting as if it was a real token (ERC20)
+    // next steps: transform DaiToken into ERC20 and use real mint method
+    function mint(address account, uint256 amount) public {
+        require(transfer(account, amount), 'Transfer error');
+    }
+
 }
