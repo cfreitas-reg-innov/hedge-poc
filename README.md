@@ -1,12 +1,11 @@
 # Definition
 Migrations files → Deploy contracts in the blockchain  
-abis → Compiled version of the contracts  
 contracts → Solidity contract files  
 test → Tests written in Mocha Chai for the contract functions  
 
 # Versions
 Truffle v5.3.0 (core: 5.3.0)  
-Solidity v0.5.16 (solc-js)  
+Solidity v0.8.3 (solc-js)  
 Node v10.19.0  
 Web3.js v1.2.9  
 Ganache 2.5.4
@@ -18,6 +17,7 @@ Ganache 2.5.4
 4. Run and check the results 
 ```
 truffle test
+truffle test test/Put.test.js
 ```
 5. If you desire to recompile the contracts and deploy them again, you can delete "abis" folder and execute the following commands  
 ```
