@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./DaiToken.sol";
 
-contract LiquidityPool is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
+contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
 
     //IERC20 public override token;
     DaiToken token;

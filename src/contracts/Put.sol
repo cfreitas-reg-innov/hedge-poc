@@ -2,7 +2,7 @@
 pragma solidity 0.8.3;
 
 import "./DaiToken.sol";
-import "./LiquidityPool.sol";
+import "./LiquidityPoolDAI.sol";
 import "./Options.sol";
 import "./FakeComponents.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -13,7 +13,7 @@ contract Put is Options{
 
     string public name = "Put Hedge Option Contract";
     DaiToken token;
-    LiquidityPool public pool;
+    LiquidityPoolDAI public pool;
     uint256 public maxSpread = 95;
     FakeSwap public fakeSwap; //update to real swap
 
@@ -24,7 +24,7 @@ contract Put is Options{
 
         token = _token;
         fakeSwap = _fakeSwap;
-        pool = new LiquidityPool(token);
+        pool = new LiquidityPoolDAI(token);
         approve();
     }
 
@@ -44,6 +44,7 @@ contract Put is Options{
         address[] memory path = new address[](2);
         path[0] = fakeSwap.WETH(); //update to real swap
         path[1] = address(token);
+        /*
         uint[] memory amounts = fakeSwap.swapExactETHForTokens {
             value: amount
         }(
@@ -52,7 +53,7 @@ contract Put is Options{
             address(this),
             block.timestamp
         );
-        premium = amounts[amounts.length - 1];
+        premium = amounts[amounts.length - 1];*/
         //pool.sendPremium(amount);
     }
 
