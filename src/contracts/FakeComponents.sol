@@ -11,26 +11,29 @@ contract FakeSwap{
     uint256 public spread = 99;
     address public WETH = address(this);
 
-    receive() external payable {}
 
     constructor(FakePriceProvider _fpp, DaiToken _daitoken){
         token = _daitoken;
         price = _fpp;
     }
 
+    receive() external payable {}
+    
     function swapExactETHForTokens(
         uint256 amountOutMin,
         address[] calldata path,
         address to,
         uint256
-    ) external payable returns (uint256[] memory amounts) {
+    ) external payable returns (uint256 amount) {
         require(path[0] == WETH, "UniswapV2Router: INVALID_PATH");
-        uint256 amount = getEthToTokenInputPrice(msg.value);
+        amount = getEthToTokenInputPrice(msg.value);
         require(amount >= amountOutMin, "Spread is too high");
-        token.mint(to, amount);
+        require(token.mint(to, amount));
+        /*
         amounts = new uint256[](path.length);
         amounts[0] = msg.value;
         amounts[path.length - 1] = amount;
+        */
     }
 
     function getEthToTokenInputPrice(uint256 eth_sold)

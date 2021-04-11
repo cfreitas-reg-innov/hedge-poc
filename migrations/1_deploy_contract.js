@@ -1,4 +1,4 @@
-const Put = artifacts.require("Put");
+const PutSimple = artifacts.require("PutSimple");
 const DaiToken = artifacts.require("DaiToken");
 const LiquidityPoolDAI = artifacts.require("LiquidityPoolDAI");
 const LiquidityPoolETH = artifacts.require("LiquidityPoolETH");
@@ -21,7 +21,7 @@ module.exports = async function(deployer, network, accounts) {
     await deployer.deploy(FakeSwap, fakePriceProvider.address, daiToken.address);
     const fakeSwap = await FakeSwap.deployed();
 
-    await deployer.deploy(Put, daiToken.address, fakePriceProvider.address, fakeSwap.address);
+    await deployer.deploy(PutSimple, daiToken.address, fakePriceProvider.address, fakeSwap.address);
 
 };
 
