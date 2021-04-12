@@ -11,7 +11,7 @@ module.exports = async function(deployer, network, accounts) {
     await deployer.deploy(DaiToken);
     const daiToken = await DaiToken.deployed();
 
-    await deployer.deploy(LiquidityPoolDAI, daiToken.address);
+    //await deployer.deploy(LiquidityPoolDAI, daiToken.address);
 
     await deployer.deploy(LiquidityPoolETH);
 

@@ -41,15 +41,13 @@ contract PutSimple is Ownable{
 
     /**
      * @notice Sends premiums to the ERC liquidity pool contract
-    */
-    function sendPremiumZ(uint256 amount) public returns (uint256 premium){
-        
+     */
+    function sendPremium(uint256 amount) external returns (uint premium) {
         uint currentPrice = uint(fakePriceProvider.latestAnswer());
         address[] memory path = new address[](2);
-        path[0] = fakeSwap.WETH(); //update to real swap
+        path[0] = fakeSwap.WETH();
         path[1] = address(token);
-                
-        uint256 amountSwapped = fakeSwap.swapExactETHForTokens {
+        uint[] memory amounts = fakeSwap.swapExactETHForTokens {
             value: amount
         }(
             amount.mul(currentPrice).mul(maxSpread).div(1e10),
@@ -57,7 +55,7 @@ contract PutSimple is Ownable{
             address(this),
             block.timestamp
         );
-        premium = amountSwapped;
+        premium = amounts[amounts.length - 1];
         pool.sendPremium(premium);
-    }  
+    }
 }

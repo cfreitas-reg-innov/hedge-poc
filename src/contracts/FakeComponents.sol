@@ -24,16 +24,14 @@ contract FakeSwap{
         address[] calldata path,
         address to,
         uint256
-    ) external payable returns (uint256 amount) {
+    ) external payable returns (uint256[] memory amounts) {
         require(path[0] == WETH, "UniswapV2Router: INVALID_PATH");
-        amount = getEthToTokenInputPrice(msg.value);
+        uint256 amount = getEthToTokenInputPrice(msg.value);
         require(amount >= amountOutMin, "Spread is too high");
-        require(token.mint(to, amount));
-        /*
+        token.mint(to, amount);
         amounts = new uint256[](path.length);
         amounts[0] = msg.value;
         amounts[path.length - 1] = amount;
-        */
     }
 
     function getEthToTokenInputPrice(uint256 eth_sold)

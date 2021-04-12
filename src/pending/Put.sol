@@ -38,13 +38,11 @@ contract Put is Options{
     /**
      * @notice Sends premiums to the ERC liquidity pool contract
      */
-    function sendPremiumZ(uint256 amount) external payable returns (uint premium){
-        
+    function sendPremium(uint256 amount) internal override returns (uint premium) {
         uint currentPrice = uint(fakePriceProvider.latestAnswer());
         address[] memory path = new address[](2);
-        path[0] = fakeSwap.WETH(); //update to real swap
+        path[0] = fakeSwap.WETH();
         path[1] = address(token);
-        
         uint[] memory amounts = fakeSwap.swapExactETHForTokens {
             value: amount
         }(
@@ -54,7 +52,7 @@ contract Put is Options{
             block.timestamp
         );
         premium = amounts[amounts.length - 1];
-        //pool.sendPremium(amount);
+        pool.sendPremium(premium);
     }
 
     /**
