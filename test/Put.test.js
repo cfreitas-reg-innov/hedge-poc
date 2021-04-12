@@ -74,7 +74,8 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
             result = await daiToken.balanceOf(putSimple.address)
             assert.equal(result.toString(), new BN('0').toString());
 
-            result = await liquidityPoolDAI.totalBalance();
+            let poolAddress = await putSimple.pool.call();
+            result = await daiToken.balanceOf(poolAddress)
             assert.equal(result.toString(), new BN('3960').toString());
         })
 
