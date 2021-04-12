@@ -90,7 +90,7 @@ contract Options is Ownable{
 
         emit Create(optionID, msg.sender, settlementFee, total);
         lockFunds(options[optionID]);
-        settlementFeeRecipient.transfer(settlementFee);
+        //settlementFeeRecipient.transfer(settlementFee);
     }
 
     function sendPremium(uint256 amount)

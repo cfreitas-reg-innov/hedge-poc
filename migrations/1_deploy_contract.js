@@ -13,7 +13,7 @@ module.exports = async function(deployer, network, accounts) {
 
     //await deployer.deploy(LiquidityPoolDAI, daiToken.address);
 
-    await deployer.deploy(LiquidityPoolETH);
+    //await deployer.deploy(LiquidityPoolETH);
 
     await deployer.deploy(FakePriceProvider, new BN(2000));
     const fakePriceProvider = await FakePriceProvider.deployed();

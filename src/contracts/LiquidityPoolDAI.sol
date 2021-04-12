@@ -12,6 +12,9 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
     DaiToken token;
     mapping(address => uint256) private lastProvideTimestamp;
     using SafeMath for uint256;
+    uint256 public lockupPeriod = 2 weeks;
+    uint256 public lockedAmount;
+    uint256 public lockedPremium;
 
     event Provide(address indexed account, uint256 amount, uint256 writeAmount);
     event Withdraw(address indexed account, uint256 amount, uint256 writeAmount);
@@ -58,6 +61,25 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
             share = totalBalance().mul(balanceOf(user)).div(supply);
         else
             share = 0;
+    }
+
+
+    /*
+     * @nonce Calls by HegicPutOptions to unlock premium after an option expiraton
+     * @param amount Amount of premiums that should be locked
+     */
+    function unlockPremium(uint256 amount) external {
+        require(lockedPremium >= amount, "Pool Error: You are trying to unlock more premiums than have been locked for the contract. Please lower the amount.");
+        lockedPremium = lockedPremium.sub(amount);
+    }
+
+    /*
+     * @nonce Calls by HegicPutOptions to unlock funds
+     * @param amount Amount of funds that should be unlocked in an expired option
+     */
+    function unlock(uint256 amount) external{
+        require(lockedAmount >= amount, "Pool Error: You are trying to unlock more funds than have been locked for your contract. Please lower the amount.");
+        lockedAmount = lockedAmount.sub(amount);
     }
 
 
@@ -113,5 +135,19 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
         //require(lockedAmount >= amount, "Pool Error: You are trying to unlock more premiums than have been locked for the contract. Please lower the amount.");
         require(token.transfer(to, amount), "Token transfer error: Please lower the amount of premiums that you want to send.");
     }
+
+    /*
+     * @nonce calls by HegicPutOptions to lock funds
+     * @param amount Amount of funds that should be locked in an option
+     */
+    function lock(uint256 amount) external onlyOwner {
+        require(
+            lockedAmount.add(amount).mul(10).div(totalBalance()) < 8,
+            "Pool Error: Not enough funds on the pool contract. Please lower the amount."
+        );
+        lockedAmount = lockedAmount.add(amount);
+    }
+
+
 
 }

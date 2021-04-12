@@ -68,5 +68,23 @@ contract Put is Options{
         //unlockFunds(option);
     }
 
+    /**
+     * @notice Unlocks the amount that was locked in a put option contract
+     * @param option A specific option contract
+     */
+    function unlockFunds(Option memory option) internal override {
+        pool.unlockPremium(option.premium);
+        pool.unlock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+    }
+
+    /**
+     * @notice Locks the amount required for an option
+     * @param option A specific option contract
+     */
+    function lockFunds(Option memory option) internal override {
+        pool.lock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+    }
+
+    
 
 }
