@@ -32,6 +32,7 @@ contract Options is Ownable{
     constructor(OptionType _type, FakePriceProvider _fakePriceProvider) {
         optionType = _type;
         fakePriceProvider = _fakePriceProvider;
+        impliedVolRate = 5500;
     }
 
     struct Option {
@@ -67,13 +68,13 @@ contract Options is Ownable{
             amount,
             strike
         );
-        uint256 strikeAmount = strike.mul(amount) / PRICE_DECIMALS;
+        //uint256 strikeAmount = strike.mul(amount) / PRICE_DECIMALS;
 
-        require(strikeAmount > 0, "Amount is too small");
-        require(settlementFee < total, "Premium is too small");
+        //require(strikeAmount > 0, "Amount is too small");
+        //require(settlementFee < total, "Premium is too small");
         require(period >= 1 days, "Period is too short");
         require(period <= 4 weeks, "Period is too long");
-        require(msg.value == total, "Wrong value");
+        //require(msg.value == total, "Wrong value");
     
         uint256 premium = sendPremium(total.sub(settlementFee));
         optionID = options.length;
