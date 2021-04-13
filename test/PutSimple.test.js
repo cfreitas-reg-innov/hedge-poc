@@ -11,12 +11,16 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
+function etherToWei(value){
+    return web3.utils.toWei(value, 'ether');
+}
+
 contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider2]) => {
     let daiToken, putSimple, liquidityPoolDAI, fakePriceProvider, fakeSwap, poolAddress;
 
     before(async () => {
         daiToken = await DaiToken.new({from: owner})
-        fakePriceProvider = await FakePriceProvider.new(new BN(2000).toString(), {from: owner})
+        fakePriceProvider = await FakePriceProvider.new(new BN(2e3), {from: owner})
         fakeSwap = await FakeSwap.new(fakePriceProvider.address, daiToken.address, {from: owner})
         putSimple = await PutSimple.new(daiToken.address, fakePriceProvider.address, fakeSwap.address, {from: owner})
 
@@ -56,11 +60,11 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
             await web3.eth.sendTransaction({
                 from: holder1,
                 to: putSimple.address,
-                value: new BN(200000000)
+                value: etherToWei('0.1')
             });
 
             let balance = await web3.eth.getBalance(putSimple.address);
-            assert.equal(balance.toString(), new BN(200000000).toString());
+            assert.equal(balance.toString(), etherToWei('0.1'));
 
         })
 
@@ -68,7 +72,7 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
             let result, balance;
 
             // invokes sends premium with the amount in ETH
-            await putSimple.sendPremium(new BN(200000000));
+            await putSimple.sendPremium(etherToWei('0.1'));
 
             // verify that put address no longer has ETH 
             balance = await web3.eth.getBalance(putSimple.address);
@@ -76,7 +80,7 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
 
             // verify that Swap contract has ETH now
             balance = await web3.eth.getBalance(fakeSwap.address);
-            assert.equal(balance.toString(), new BN(200000000).toString());
+            assert.equal(balance.toString(), etherToWei('0.1'));
   
             // verify that put contract receives DAI and sends to the Pool, having '0' DAIs remaining
             result = await daiToken.balanceOf(putSimple.address)
@@ -84,7 +88,7 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
 
             // verify that pool has correct balance of DAI (3960 of Swap + 100 provided to the pool)
             result = await liquidityPoolDAI.totalBalance()
-            assert.equal(result.toString(), new BN('4060').toString());
+            assert.equal(result.toString(), new BN('280').toString());
         })
 
         

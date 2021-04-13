@@ -8,7 +8,7 @@ contract FakeSwap{
     DaiToken token;
     FakePriceProvider price;
 
-    uint256 public spread = 99;
+    uint256 public spread;
     address public WETH = address(this);
 
 
@@ -27,7 +27,7 @@ contract FakeSwap{
     ) external payable returns (uint256[] memory amounts) {
         require(path[0] == WETH, "UniswapV2Router: INVALID_PATH");
         uint256 amount = getEthToTokenInputPrice(msg.value);
-        require(amount >= amountOutMin, "Spread is too high");
+        //require(amount >= amountOutMin, "Spread is too high");
         token.mint(to, amount);
         amounts = new uint256[](path.length);
         amounts[0] = msg.value;
@@ -39,9 +39,17 @@ contract FakeSwap{
         view
         returns (uint256 tokens_bought)
     {
+        // eth_sold = 200e8 * 10e10 / 10e10
+        // premium 0.1 ether = 100000000000000000 or 10e17200e8
+
+        // 200 * 1e8 -> price
+        // 1e18 = 1e8 * 1e10 / 1e10
+        // 1e8 * 1e10 / 1e10 * 200
+
+        // 200e8 = 200 0000 0000
         tokens_bought =
-            (eth_sold * uint256(price.latestAnswer()) * spread) /
-            1e10;
+            (eth_sold * uint256(price.latestAnswer())) /
+            1e18;
     }
 
 }
@@ -60,5 +68,6 @@ contract FakePriceProvider {
     function setPrice(uint256 _price) public {
         price = _price;
     }
+
 }
 
