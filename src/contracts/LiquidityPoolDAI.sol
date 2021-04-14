@@ -46,7 +46,7 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
      * @return balance Pool balance
      */
     function totalBalance() public view returns (uint256 balance) {
-        return token.balanceOf(address(this));
+        return token.balanceOf(address(this)).sub(lockedPremium);
     }
     
 
@@ -115,7 +115,7 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
      * @param amount Funds that should be locked
      */
     function sendPremium(uint256 amount) external onlyOwner {
-        //lockedPremium = lockedPremium.add(amount);
+        lockedPremium = lockedPremium.add(amount);
         require(
             token.transferFrom(msg.sender, address(this), amount),
             "Token transfer error: Please lower the amount of premiums that you want to send."
@@ -141,10 +141,11 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
      * @param amount Amount of funds that should be locked in an option
      */
     function lock(uint256 amount) external onlyOwner {
+        /*
         require(
             lockedAmount.add(amount).mul(10).div(totalBalance()) < 8,
             "Pool Error: Not enough funds on the pool contract. Please lower the amount."
-        );
+        );*/
         lockedAmount = lockedAmount.add(amount);
     }
 

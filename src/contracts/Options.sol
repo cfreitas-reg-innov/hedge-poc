@@ -76,7 +76,7 @@ contract Options is Ownable{
         require(period <= 4 weeks, "Period is too long");
         //require(msg.value == total, "Wrong value");
     
-        uint256 premium = sendPremium(total.sub(settlementFee));
+        uint256 premium = sendPremium(msg.value);//.sub(settlementFee));
         optionID = options.length;
         options.push(
             Option(
@@ -124,10 +124,10 @@ contract Options is Ownable{
         )
     {
         uint256 currentPrice = uint256(fakePriceProvider.latestAnswer());
-        settlementFee = getSettlementFee(amount);
-        periodFee = getPeriodFee(amount, period, strike, currentPrice);
-        strikeFee = getStrikeFee(amount, strike, currentPrice);
-        total = periodFee.add(strikeFee);
+        //settlementFee = getSettlementFee(amount);
+        //periodFee = getPeriodFee(amount, period, strike, currentPrice);
+        //strikeFee = getStrikeFee(amount, strike, currentPrice);
+        total = amount;
     }
 
         /**
@@ -165,7 +165,7 @@ contract Options is Ownable{
         uint256 currentPrice
     ) internal view returns (uint256 fee) {
         if (optionType == OptionType.Put)
-            return amount
+            return amount;/*amount
                 .mul(sqrt(period))
                 .mul(impliedVolRate)
                 .mul(strike)
@@ -177,7 +177,7 @@ contract Options is Ownable{
                 .mul(impliedVolRate)
                 .mul(currentPrice)
                 .div(strike)
-                .div(PRICE_DECIMALS);
+                .div(PRICE_DECIMALS);*/
     }
 
     /**

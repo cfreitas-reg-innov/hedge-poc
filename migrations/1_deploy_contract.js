@@ -3,6 +3,7 @@ const Put = artifacts.require("Put");
 const DaiToken = artifacts.require("DaiToken");
 const FakePriceProvider = artifacts.require('FakePriceProvider');
 const FakeSwap = artifacts.require('FakeSwap');
+const LiquidityPoolDAI = artifacts.require('LiquidityPoolDAI');
 const BN = web3.utils.BN;
 
 module.exports = async function(deployer, network, accounts) {
@@ -10,7 +11,8 @@ module.exports = async function(deployer, network, accounts) {
     await deployer.deploy(DaiToken);
     const daiToken = await DaiToken.deployed();
 
-    //await deployer.deploy(LiquidityPoolDAI, daiToken.address);
+    await deployer.deploy(LiquidityPoolDAI, daiToken.address);
+    const liquidityPoolDAI = await LiquidityPoolDAI.deployed();
 
     //await deployer.deploy(LiquidityPoolETH);
 

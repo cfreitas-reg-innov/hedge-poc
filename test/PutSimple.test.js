@@ -88,7 +88,7 @@ contract('PutSimple', ([owner, holder1, holder2, liquidityProvider1, liquidityPr
 
             // verify that pool has correct balance of DAI (3960 of Swap + 100 provided to the pool)
             result = await liquidityPoolDAI.totalBalance()
-            assert.equal(result.toString(), new BN('280').toString());
+            assert.equal(result.toString(), new BN('300').toString());
         })
 
         

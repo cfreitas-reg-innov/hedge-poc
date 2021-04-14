@@ -39,14 +39,6 @@ contract FakeSwap{
         view
         returns (uint256 tokens_bought)
     {
-        // eth_sold = 200e8 * 10e10 / 10e10
-        // premium 0.1 ether = 100000000000000000 or 10e17200e8
-
-        // 200 * 1e8 -> price
-        // 1e18 = 1e8 * 1e10 / 1e10
-        // 1e8 * 1e10 / 1e10 * 200
-
-        // 200e8 = 200 0000 0000
         tokens_bought =
             (eth_sold * uint256(price.latestAnswer())) /
             1e18;

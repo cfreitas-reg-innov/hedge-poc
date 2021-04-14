@@ -74,7 +74,7 @@ contract Put is Options{
      */
     function unlockFunds(Option memory option) internal override {
         pool.unlockPremium(option.premium);
-        pool.unlock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+        //pool.unlock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
     }
 
     /**
@@ -82,7 +82,8 @@ contract Put is Options{
      * @param option A specific option contract
      */
     function lockFunds(Option memory option) internal override {
-        pool.lock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+        pool.lock(fakeSwap.getEthToTokenInputPrice(option.amount)); // locks the total amount in DAI for the total of the contract
+        //pool.lock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
     }
 
     
