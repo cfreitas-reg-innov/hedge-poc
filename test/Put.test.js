@@ -20,8 +20,18 @@ function numberToBN(number){
     return new toBN(number).toString();
 }
 
+const send = (method, params = []) =>
+  new Promise((done) =>
+    web3.currentProvider.send({id: 0, jsonrpc: "2.0", method, params}, done)
+  )
+
+const timeTravel = async (seconds) => {
+    await send("evm_increaseTime", [seconds])
+    await send("evm_mine")
+  }
+
 contract('Put', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider2]) => {
-    let daiToken, put, liquidityPoolDAI, fakePriceProvider, fakeSwap, poolAddress, price;
+    let daiToken, put, liquidityPoolDAI, fakePriceProvider, fakeSwap, poolAddress, price, optionId;
 
     before(async () => {
         price = new BN(2e3);
@@ -78,7 +88,8 @@ contract('Put', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider
             })
             .then((x) => x.logs.find((x) => x.event == "Create"))
             .then((x) => (x ? x.args : null))
-            assert.equal(contract.id.toString(), '0')
+            optionId = contract.id.toString() 
+            assert.equal(optionId, '0')
         })
 
         it('Should have no more balance in ETH in the Put contract', async () => {
@@ -95,10 +106,29 @@ contract('Put', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider
         })
     })
 
-    describe('Distribute Premium after contract expires', async () => {
+    describe('Unlock Option amount and release the premium after the contract expiration to the LPs', async () => {
+
+
+        it('Should expire the contract after time passing', async () => {
+            await timeTravel(86400 + 1);
+            //await put.unlock(optionId);
+            const actual = await put.unlock(optionId)
+            .then((x) => x.logs.filter((x) => x.event == "Expire"))
+            .then((x) => x.map((x) => x.args.id.toNumber()))
+
+            // Verifies that the id inside the "Expire" event, for an expired contract
+            // corresponds to the contract we requested to unlock
+            assert.equal(actual, optionId);
+        })
 
         it('Should increase the share in DAI for the liquidity providers based on their contribution to the pool', async () => {
-            
+            // LP1 has 70140 in DAI as share in the pool (70000 provided + 140 (70% of 200) of the premium)
+            let shareLP1 = await liquidityPoolDAI.shareOf(liquidityProvider1);
+            assert.equal(shareLP1.toString(), numberToBN(70140))
+
+            // LP2 has 30000 in DAI as share in the pool (30000 provided + 60 (30% of 200) of the premium)
+            let shareLP2 = await liquidityPoolDAI.shareOf(liquidityProvider2);
+            assert.equal(shareLP2.toString(), numberToBN(30060))
         })
     })
 })

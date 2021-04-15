@@ -19,6 +19,7 @@ contract Options is Ownable{
     uint256 internal constant PRICE_DECIMALS = 1e8;
     uint256 internal contractCreationTimestamp;
 
+    event Expire(uint256 indexed id, uint256 premium);
     event Create(
         uint256 indexed id,
         address indexed account,
@@ -28,6 +29,7 @@ contract Options is Ownable{
 
     enum State {Active, Exercised, Expired} 
     enum OptionType {Put, Call}
+    
 
     constructor(OptionType _type, FakePriceProvider _fakePriceProvider) {
         optionType = _type;
@@ -209,5 +211,18 @@ contract Options is Ownable{
         result = x;
         uint256 k = x.add(1).div(2);
         while (k < result) (result, k) = (k, x.div(k).add(k).div(2));
+    }
+
+    /**
+     * @notice Unlock funds locked in the expired options
+     * @param optionID ID of the option
+     */
+    function unlock(uint256 optionID) public {
+        Option storage option = options[optionID];
+        require(option.expiration < block.timestamp, "Option has not expired yet");
+        require(option.state == State.Active, "Option is not active");
+        option.state = State.Expired;
+        unlockFunds(option);
+        emit Expire(optionID, option.premium);
     }
 }

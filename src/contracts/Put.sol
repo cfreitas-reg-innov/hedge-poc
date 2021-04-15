@@ -74,6 +74,7 @@ contract Put is Options{
      */
     function unlockFunds(Option memory option) internal override {
         pool.unlockPremium(option.premium);
+        pool.unlock(fakeSwap.getEthToTokenInputPrice(option.amount));
         //pool.unlock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
     }
 
