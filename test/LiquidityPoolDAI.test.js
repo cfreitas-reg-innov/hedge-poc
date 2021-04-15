@@ -36,9 +36,9 @@ contract('LiquidityPoolDAI', ([owner, holder1, holder2, liquidityProvider1, liqu
         await daiToken.transfer(liquidityProvider2, numberToBN(100000))
     })
 
-    describe('Interact with the pool', async () => {
+    describe('Provide to the pool', async () => {
 
-        it('Should provide liquidity to the pool', async () => {
+        it('Should have liquidity in the pool', async () => {
             // Provides liquidity with LP1
             await daiToken.approve(liquidityPoolDAI.address, numberToBN(70000), {from: liquidityProvider1})
             await liquidityPoolDAI.provide(numberToBN(70000), {from: liquidityProvider1});
@@ -74,4 +74,36 @@ contract('LiquidityPoolDAI', ([owner, holder1, holder2, liquidityProvider1, liqu
             assert.equal(shareLP2.toString(), numberToBN(30000))
         })
     })
+
+    describe('Withdraw from the pool', async () => {
+
+        it('Should withdraw an amount to the LP1', async () => {
+            await liquidityPoolDAI.withdraw(numberToBN(20000), {from: liquidityProvider1});
+        })
+
+        it('Should have less balance and supply in the pool', async () => {
+            // The total balance of the pool is 20000 less than before
+            let balance = await liquidityPoolDAI.totalBalance()
+            assert.equal(balance.toString(), numberToBN(80000))
+
+            // The supply in the pool is equal to the balance * 1000
+            let supply = await liquidityPoolDAI.totalSupply();
+            assert.equal(supply.toString(), numberToBN(80000000))
+
+        })
+
+        it('Should decrease the total share in the pool for the LP1', async () => {
+            // LP1 has 20000 less in DAI as share in the pool
+            let shareLP1 = await liquidityPoolDAI.shareOf(liquidityProvider1);
+            assert.equal(shareLP1.toString(), numberToBN(50000));
+        })
+
+        it('Should increase the amount of DAI that LP1 has in his wallet', async () => {
+            // LP1 had 30000 left after providing to the pool, now he has 30000 + 20000 returned from his withdrawal
+            let totalDAILP1 = await daiToken.balanceOf(liquidityProvider1);
+            assert.equal(totalDAILP1.toString(), numberToBN(50000));
+        })
+
+    })
+
 })

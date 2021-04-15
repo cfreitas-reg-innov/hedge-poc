@@ -53,25 +53,9 @@ contract('Put', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider
             // Provides liquidity with LP2
             await daiToken.approve(liquidityPoolDAI.address, numberToBN(30000), {from: liquidityProvider2})
             await liquidityPoolDAI.provide(numberToBN(30000), {from: liquidityProvider2})
-
-            // The total of minted tokens for the LP1
-            let mintedLP1 = await liquidityPoolDAI.balanceOf(liquidityProvider1)
-            assert.equal(mintedLP1.toString(), numberToBN(70000000))
-
-            // The total of minted tokens for the LP2
-            let mintedLP2 = await liquidityPoolDAI.balanceOf(liquidityProvider2)
-            assert.equal(mintedLP2.toString(), numberToBN(30000000))
-
-            // The total balance of the pool is the sum of both liquidity providers
-            let balance = await liquidityPoolDAI.totalBalance()
-            assert.equal(balance.toString(), numberToBN(100000))
-
-            // The supply in the pool is equal to the balance * 1000
-            let supply = await liquidityPoolDAI.totalSupply();
-            assert.equal(supply.toString(), numberToBN(100000000))
         })
 
-        it('LPs have the share in the pool based on their contribution', async () => {
+        it('Should give the LPs a share in DAI based on their contribution', async () => {
             // LP1 has 70000 in DAI as share in the pool
             let shareLP1 = await liquidityPoolDAI.shareOf(liquidityProvider1);
             assert.equal(shareLP1.toString(), numberToBN(70000))
@@ -109,14 +93,12 @@ contract('Put', ([owner, holder1, holder2, liquidityProvider1, liquidityProvider
             let result = await liquidityPoolDAI.totalBalance()
             assert.equal(result.toString(), new BN('100000').toString());
         })
+    })
 
-        it('LPs have the', async () => {
-            // 100000 DAI from LPs + 200 DAI from the new contract 
-            let result = await liquidityPoolDAI.totalBalance()
-            assert.equal(result.toString(), new BN('100200').toString());
+    describe('Distribute Premium after contract expires', async () => {
+
+        it('Should increase the share in DAI for the liquidity providers based on their contribution to the pool', async () => {
+            
         })
-
-
-
     })
 })

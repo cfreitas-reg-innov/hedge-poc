@@ -42,6 +42,14 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
     }
         
     /*
+     * @nonce Returns the amount of DAI available for withdrawals
+     * @return balance Unlocked amount
+     */
+    function availableBalance() public view returns (uint256 balance) {
+        return totalBalance().sub(lockedAmount);
+    }
+
+    /*
      * @nonce Returns the DAI total balance provided to the pool
      * @return balance Pool balance
      */
@@ -94,11 +102,11 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
         require(
             lastProvideTimestamp[msg.sender].add(lockupPeriod) <= now,
             "Pool: Withdrawal is locked up"
-        );
+        );*/
         require(
             amount <= availableBalance(),
             "Pool Error: You are trying to unlock more funds than have been locked for your contract. Please lower the amount."
-        );*/
+        );
         burn = amount.mul(totalSupply()).div(totalBalance());
 
         //require(burn <= maxBurn, "Pool: Burn limit is too small");
