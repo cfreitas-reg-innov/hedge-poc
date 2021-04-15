@@ -19,6 +19,7 @@ contract Options is Ownable{
     uint256 internal constant PRICE_DECIMALS = 1e8;
     uint256 internal contractCreationTimestamp;
 
+    event Expire(uint256 indexed id, uint256 premium);
     event Create(
         uint256 indexed id,
         address indexed account,
@@ -28,10 +29,12 @@ contract Options is Ownable{
 
     enum State {Active, Exercised, Expired} 
     enum OptionType {Put, Call}
+    
 
     constructor(OptionType _type, FakePriceProvider _fakePriceProvider) {
         optionType = _type;
         fakePriceProvider = _fakePriceProvider;
+        impliedVolRate = 5500;
     }
 
     struct Option {
@@ -67,15 +70,15 @@ contract Options is Ownable{
             amount,
             strike
         );
-        uint256 strikeAmount = strike.mul(amount) / PRICE_DECIMALS;
+        //uint256 strikeAmount = strike.mul(amount) / PRICE_DECIMALS;
 
-        require(strikeAmount > 0, "Amount is too small");
-        require(settlementFee < total, "Premium is too small");
+        //require(strikeAmount > 0, "Amount is too small");
+        //require(settlementFee < total, "Premium is too small");
         require(period >= 1 days, "Period is too short");
         require(period <= 4 weeks, "Period is too long");
-        require(msg.value == total, "Wrong value");
+        //require(msg.value == total, "Wrong value");
     
-        uint256 premium = sendPremium(total.sub(settlementFee));
+        uint256 premium = sendPremium(msg.value);//.sub(settlementFee));
         optionID = options.length;
         options.push(
             Option(
@@ -90,7 +93,7 @@ contract Options is Ownable{
 
         emit Create(optionID, msg.sender, settlementFee, total);
         lockFunds(options[optionID]);
-        settlementFeeRecipient.transfer(settlementFee);
+        //settlementFeeRecipient.transfer(settlementFee);
     }
 
     function sendPremium(uint256 amount)
@@ -123,10 +126,10 @@ contract Options is Ownable{
         )
     {
         uint256 currentPrice = uint256(fakePriceProvider.latestAnswer());
-        settlementFee = getSettlementFee(amount);
-        periodFee = getPeriodFee(amount, period, strike, currentPrice);
-        strikeFee = getStrikeFee(amount, strike, currentPrice);
-        total = periodFee.add(strikeFee);
+        //settlementFee = getSettlementFee(amount);
+        //periodFee = getPeriodFee(amount, period, strike, currentPrice);
+        //strikeFee = getStrikeFee(amount, strike, currentPrice);
+        total = amount;
     }
 
         /**
@@ -164,7 +167,7 @@ contract Options is Ownable{
         uint256 currentPrice
     ) internal view returns (uint256 fee) {
         if (optionType == OptionType.Put)
-            return amount
+            return amount;/*amount
                 .mul(sqrt(period))
                 .mul(impliedVolRate)
                 .mul(strike)
@@ -176,7 +179,7 @@ contract Options is Ownable{
                 .mul(impliedVolRate)
                 .mul(currentPrice)
                 .div(strike)
-                .div(PRICE_DECIMALS);
+                .div(PRICE_DECIMALS);*/
     }
 
     /**
@@ -208,5 +211,18 @@ contract Options is Ownable{
         result = x;
         uint256 k = x.add(1).div(2);
         while (k < result) (result, k) = (k, x.div(k).add(k).div(2));
+    }
+
+    /**
+     * @notice Unlock funds locked in the expired options
+     * @param optionID ID of the option
+     */
+    function unlock(uint256 optionID) public {
+        Option storage option = options[optionID];
+        require(option.expiration < block.timestamp, "Option has not expired yet");
+        require(option.state == State.Active, "Option is not active");
+        option.state = State.Expired;
+        unlockFunds(option);
+        emit Expire(optionID, option.premium);
     }
 }

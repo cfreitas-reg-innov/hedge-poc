@@ -46,7 +46,7 @@ contract LiquidityPoolETH is Ownable, ERC20("ETH LP Token", "writeETH"){
      * @nonce Returns the total balance of ETH provided to the pool
      * @return balance Pool balance
      */
-    function totalBalance() public returns (uint256 balance) {
+    function totalBalance() public view returns (uint256 balance) {
         return address(this).balance.sub(lockedPremium);
     }
 
@@ -54,7 +54,7 @@ contract LiquidityPoolETH is Ownable, ERC20("ETH LP Token", "writeETH"){
      * @nonce calls by HegicPutOptions to lock the premiums
      * @param amount Amount of premiums that should be locked
      */
-    function sendPremium() external override payable onlyOwner {
+    function sendPremium() external payable onlyOwner {
         lockedPremium = lockedPremium.add(msg.value);
     }
 }

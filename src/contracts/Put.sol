@@ -38,13 +38,11 @@ contract Put is Options{
     /**
      * @notice Sends premiums to the ERC liquidity pool contract
      */
-    function sendPremium(uint256 amount) public returns (uint premium){
-        
+    function sendPremium(uint256 amount) internal override returns (uint premium) {
         uint currentPrice = uint(fakePriceProvider.latestAnswer());
         address[] memory path = new address[](2);
-        path[0] = fakeSwap.WETH(); //update to real swap
+        path[0] = fakeSwap.WETH();
         path[1] = address(token);
-        /*
         uint[] memory amounts = fakeSwap.swapExactETHForTokens {
             value: amount
         }(
@@ -53,8 +51,8 @@ contract Put is Options{
             address(this),
             block.timestamp
         );
-        premium = amounts[amounts.length - 1];*/
-        //pool.sendPremium(amount);
+        premium = amounts[amounts.length - 1];
+        pool.sendPremium(premium);
     }
 
     /**
@@ -70,5 +68,25 @@ contract Put is Options{
         //unlockFunds(option);
     }
 
+    /**
+     * @notice Unlocks the amount that was locked in a put option contract
+     * @param option A specific option contract
+     */
+    function unlockFunds(Option memory option) internal override {
+        pool.unlockPremium(option.premium);
+        pool.unlock(fakeSwap.getEthToTokenInputPrice(option.amount));
+        //pool.unlock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+    }
+
+    /**
+     * @notice Locks the amount required for an option
+     * @param option A specific option contract
+     */
+    function lockFunds(Option memory option) internal override {
+        pool.lock(fakeSwap.getEthToTokenInputPrice(option.amount)); // locks the total amount in DAI for the total of the contract
+        //pool.lock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+    }
+
+    
 
 }
