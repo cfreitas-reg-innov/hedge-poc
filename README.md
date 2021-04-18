@@ -78,7 +78,7 @@ Creating a Pull Request with the master
 ```bash
 git fetch
 git branch -va # Verifies if master branch is behind the new branch
-git request-pull master ./ # Creates a PR for this branch
+git request-pull master ./ # Creates a PR for this branch locally, so you can see the changes proposed. Still, you need to go to GitHub and create a Pull Request manually there
 ```
 
 Deleting old branch
