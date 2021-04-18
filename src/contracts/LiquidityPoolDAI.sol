@@ -157,6 +157,8 @@ contract LiquidityPoolDAI is Ownable, ERC20("Hegic DAI LP Token", "writeDAI"){
         lockedAmount = lockedAmount.add(amount);
     }
 
+    
+
 
 
 }

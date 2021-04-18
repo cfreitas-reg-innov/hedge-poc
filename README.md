@@ -51,25 +51,46 @@ Configurate a private SSH key:
 https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
 ### Basic commands:
+Configuration
+```
+git config --global core.editor "nano" # this is the text editor that I prefer
+git config --global user.name "Your Name" # change "Your Name" for your name
+git config --global user.email "email@example.com" # change the email for your email
+```
+
+Setting up the environment
 ```
 git clone https://github.com/cfreitas-reg-innov/hedge-poc.git
 git remote add origin git@github.com:cfreitas-reg-innov/hedge-poc.git
 git pull origin main
+```
+
+Creating a new branch to work on
+```
 git checkout -b new_branch # to create a new branch, utilize the "-b" parameter
-git add -A
+git add -A # adds all files to the commit (You can specify the files if this commit is not related to all of them)
 git commit -a -m 'message' # it is important to include a message about what was changed in the commit
 git push --set-upstream origin new_branch
+```
 
-git checkout main # switches back to the main branch
+Merging new branch with the master
+```
+git fetch
+git branch -va # Verifies if master branch is behind the new branch
+git checkout master # switches back to the main branch
+git pull # If necessary to update master branch to the latest update from other branches
+git merge new_branch # merges new branch with the master
+```
 
+Deleting old branch
+```
 git push -d origin <branch_name> # deletes remote branch after Pull Request
 git branch -d <branch_name> # deletes local branch after Pull Request
+```
 
+Checking branch status
+```
 git status # to check the status of the commits and the branch
-
-git config --global core.editor "nano" # this is the text editor that I prefer
-git config --global user.name "Your Name" # change "Your Name" for your name
-git config --global user.email "email@example.com" # change the email for your email
 ```
 
 ### Important to notice:

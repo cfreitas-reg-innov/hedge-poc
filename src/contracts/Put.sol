@@ -17,6 +17,9 @@ contract Put is Options{
     uint256 public maxSpread = 95;
     FakeSwap public fakeSwap; //update to real swap
 
+    event Exercise(uint256 indexed id, uint256 profit);
+
+
     constructor(DaiToken _token, 
                 FakePriceProvider _fakePriceProvider, // update to real price provider
                 FakeSwap _fakeSwap) // update to real swap
@@ -60,12 +63,11 @@ contract Put is Options{
      * @param option A specific option contract
      */
     function payProfit(Option memory option) internal override returns (uint profit) {
-        //uint currentPrice = uint(priceProvider.latestAnswer());
-        //require(option.strike >= currentPrice, "Current price is too high");
-        //profit = option.strike.sub(currentPrice).mul(option.amount).div(PRICE_DECIMALS);
-        profit = uint256(10000000000000000000);
+        uint currentPrice = uint(fakePriceProvider.latestAnswer());
+        require(option.strike >= currentPrice, "Current price is too high");
+        profit = option.strike.sub(currentPrice);
         pool.send(option.holder, profit);
-        //unlockFunds(option);
+        unlockFunds(option);
     }
 
     /**
@@ -85,6 +87,23 @@ contract Put is Options{
     function lockFunds(Option memory option) internal override {
         pool.lock(fakeSwap.getEthToTokenInputPrice(option.amount)); // locks the total amount in DAI for the total of the contract
         //pool.lock(option.amount.mul(option.strike).div(PRICE_DECIMALS));
+    }
+
+    /**
+     * @notice Exercises an active option
+     * @param optionID ID of your option
+     */
+    function exercise(uint256 optionID) external {
+        Option storage option = options[optionID];
+
+        require(option.expiration >= block.timestamp, "Option has expired");
+        require(option.holder == msg.sender, "Wrong msg.sender");
+        require(option.state == State.Active, "Wrong state");
+
+        option.state = State.Exercised;
+        uint256 profit = payProfit(option);
+
+        emit Exercise(optionID, profit);
     }
 
     
